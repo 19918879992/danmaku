@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>鎵嬫寔寮瑰箷</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:#F5F5F5;overflow-x:hidden}
+.page{display:none;position:fixed;top:0;left:0;width:100%;height:100%}
+.page.active{display:block}
+
+/* 璁剧疆椤?*/
+.s-page{overflow-y:auto;-webkit-overflow-scrolling:touch;background:#F5F5F5;padding-bottom:90px}
+.s-head{text-align:center;padding:28px 16px 12px}
+.s-head h1{font-size:26px;color:#333}
+.s-head p{font-size:13px;color:#999;margin-top:4px}
+.s-sec{width:88%;margin:14px auto 0}
+.s-lbl{font-size:15px;color:#333;font-weight:600;margin-bottom:6px}
+.s-inp{width:100%;height:44px;font-size:16px;padding:0 12px;border:1px solid #E0E0E0;border-radius:8px;background:#FFF;outline:none;-webkit-appearance:none;appearance:none}
+.s-inp.err{border-color:#FF4444}
+.s-err{font-size:12px;color:#FF4444;margin-top:3px;display:none}
+
+/* 棰滆壊 */
+.c-grid{display:flex;flex-wrap:wrap;gap:6px}
+.c-item{width:36px;height:36px;border-radius:6px;border:2px solid #DDD;cursor:pointer}
+.c-item.on{border:3px solid #FF6600;transform:scale(1.1)}
+
+/* 婊戝潡 */
+.sl-row{display:flex;align-items:center;gap:10px}
+.sl-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#DDD;border-radius:2px;outline:none}
+.sl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#FF6600;cursor:pointer}
+.sl-val{min-width:44px;text-align:center;font-size:13px;color:#333}
+
+/* 鍙戝姩鎸夐挳 */
+.s-btn{position:fixed;bottom:0;left:0;right:0;padding:10px 0 24px;background:#F5F5F5;text-align:center;z-index:10}
+.s-btn button{width:85%;height:48px;font-size:18px;font-weight:700;color:#FFF;background:#FF6600;border:none;border-radius:24px;cursor:pointer}
+.s-btn button:active{background:#E55A00}
+
+/* 寮瑰箷灞曠ず椤?*/
+.d-page{background:#000;cursor:pointer;overflow:hidden}
+.d-text{position:absolute;white-space:nowrap;font-weight:700;will-change:left}
+.d-hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.35);pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- 璁剧疆椤?-->
+<div class="page s-page active" id="sPage">
+  <div class="s-head"><h1>鎵嬫寔寮瑰箷</h1><p>璁剧疆寮瑰箷鍐呭涓庢牱寮?/p></div>
+  <div class="s-sec">
+    <div class="s-lbl">寮瑰箷鍐呭</div>
+    <input type="text" class="s-inp" id="inp" placeholder="璇疯緭鍏ュ脊骞曞唴瀹?>
+    <div class="s-err" id="errMsg">寮瑰箷鍐呭涓嶈兘涓虹┖</div>
+  </div>
+  <div class="s-sec">
+    <div class="s-lbl">瀛椾綋棰滆壊</div>
+    <div class="c-grid" id="fcGrid"></div>
+  </div>
+  <div class="s-sec">
+    <div class="s-lbl">瀛椾綋澶у皬</div>
+    <div class="sl-row">
+      <input type="range" id="fsSlider" min="24" max="96" step="4" value="48">
+      <span class="sl-val" id="fsVal">48px</span>
+    </div>
+  </div>
+  <div class="s-sec">
+    <div class="s-lbl">鑳屾櫙棰滆壊</div>
+    <div class="c-grid" id="bcGrid"></div>
+  </div>
+  <div class="s-sec">
+    <div class="s-lbl">婊氬姩閫熷害</div>
+    <div class="sl-row">
+      <input type="range" id="spSlider" min="1" max="10" step="1" value="5">
+      <span class="sl-val" id="spVal">5</span>
+    </div>
+  </div>
+  <div class="s-btn"><button id="launchBtn">鍙戝姩寮瑰箷</button></div>
+</div>
+
+<!-- 寮瑰箷灞曠ず椤?-->
+<div class="page d-page" id="dPage">
+  <div class="d-text" id="dText"></div>
+  <div class="d-hint">鐐瑰嚮灞忓箷鍋滄寮瑰箷</div>
+</div>
+
+<script>
+(function(){
+var COLORS=['#FFFFFF','#FF0000','#FF6600','#FFCC00','#00FF00','#00CCFF','#0000FF','#9900FF','#FF00FF','#FF6699','#000000','#888888'];
+var cfg={text:'',fc:'#FFFFFF',fs:48,bc:'#000000',sp:5};
+var animId=null,st=0;
+
+function makeGrid(id,sel,onPick){
+  var g=document.getElementById(id);
+  for(var i=0;i<COLORS.length;i++){
+    var c=COLORS[i];
+    var d=document.createElement('div');
+    d.className='c-item'+(c===sel?' on':'');
+    d.style.backgroundColor=c;
+    if(c==='#FFFFFF'||c==='#FFCC00') d.style.borderColor=c===sel?'#FF6600':'#CCC';
+    d.setAttribute('data-color',c);
+    d.onclick=function(){
+      var items=g.querySelectorAll('.c-item');
+      for(var j=0;j<items.length;j++){
+        items[j].className='c-item';
+        var cc=items[j].getAttribute('data-color');
+        if(cc==='#FFFFFF'||cc==='#FFCC00') items[j].style.borderColor='#CCC';
+      }
+      this.className='c-item on';
+      this.style.borderColor='#FF6600';
+      onPick(this.getAttribute('data-color'));
+    };
+    g.appendChild(d);
+  }
+}
+
+makeGrid('fcGrid',cfg.fc,function(c){cfg.fc=c});
+makeGrid('bcGrid',cfg.bc,function(c){cfg.bc=c});
+
+document.getElementById('fsSlider').oninput=function(){cfg.fs=parseInt(this.value);document.getElementById('fsVal').textContent=this.value+'px'};
+document.getElementById('spSlider').oninput=function(){cfg.sp=parseInt(this.value);document.getElementById('spVal').textContent=this.value};
+document.getElementById('inp').oninput=function(){if(this.value.trim().length>0){this.className='s-inp';document.getElementById('errMsg').style.display='none'}};
+
+function dur(sp){return 10000-sp*800}
+
+document.getElementById('launchBtn').onclick=function(){
+  var inp=document.getElementById('inp');
+  var txt=inp.value.trim();
+  if(!txt){inp.className='s-inp err';document.getElementById('errMsg').style.display='block';return}
+  cfg.text=txt;
+
+  document.getElementById('sPage').className='page s-page';
+  var dp=document.getElementById('dPage');
+  dp.className='page d-page active';
+  dp.style.backgroundColor=cfg.bc;
+
+  var dt=document.getElementById('dText');
+  dt.textContent=cfg.text;
+  dt.style.fontSize=cfg.fs+'px';
+  dt.style.color=cfg.fc;
+  dt.style.top='50%';
+  dt.style.transform='translateY(-50%)';
+  dt.style.left='0px';
+
+  setTimeout(startAnim,200);
+};
+
+function startAnim(){
+  var dt=document.getElementById('dText');
+  var dp=document.getElementById('dPage');
+  var sw=dp.clientWidth;
+  var tw=dt.offsetWidth;
+  var sx=sw+10;
+  var ex=-tw-10;
+  var dist=sx-ex;
+  var d=dur(cfg.sp);
+  dt.style.left=sx+'px';
+  st=performance.now();
+
+  function tick(now){
+    var el=now-st;
+    var p=Math.min(el/d,1);
+    var cx=sx-dist*p;
+    dt.style.left=cx+'px';
+    if(p<1){animId=requestAnimationFrame(tick)}
+    else{st=performance.now();animId=requestAnimationFrame(tick)}
+  }
+  animId=requestAnimationFrame(tick);
+}
+
+document.getElementById('dPage').onclick=function(){
+  if(animId){cancelAnimationFrame(animId);animId=null}
+  document.getElementById('dPage').className='page d-page';
+  document.getElementById('sPage').className='page s-page active';
+};
+})();
+</script>
+</body>
+</html>
