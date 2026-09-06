@@ -62,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
   <div class="s-sec">
     <div class="s-lbl">字体大小</div>
     <div class="sl-row">
-      <input type="range" id="fsSlider" min="24" max="96" step="4" value="48">
+      <input type="range" id="fsSlider" min="24" max="400" step="4" value="120">
       <span class="sl-val" id="fsVal">48px</span>
     </div>
   </div>
@@ -89,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
 <script>
 (function(){
 var COLORS=['#FFFFFF','#FF0000','#FF6600','#FFCC00','#00FF00','#00CCFF','#0000FF','#9900FF','#FF00FF','#FF6699','#000000','#888888'];
-var cfg={text:'',fc:'#FFFFFF',fs:48,bc:'#000000',sp:5};
+var cfg={text:'',fc:'#FFFFFF',fs:120,bc:'#000000',sp:5};
 var animId=null,st=0;
 
 function makeGrid(id,sel,onPick){
