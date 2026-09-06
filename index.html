@@ -38,8 +38,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
 .s-btn button:active{background:#E55A00}
 
 /* 弹幕展示页 */
-.d-page{background:#000;cursor:pointer;overflow:hidden}
-.d-page.landscape{position:fixed;top:0;left:0;width:100vh;height:100vw;transform:rotate(90deg);transform-origin:top left}
+.d-page{background:#000;cursor:pointer;overflow:hidden;z-index:9999}
+.d-page.landscape{position:fixed;top:0;left:0;width:100vw;height:100vh;transform:rotate(90deg);transform-origin:50% 50%;background:#000}
 .d-text{position:absolute;white-space:nowrap;font-weight:700;will-change:left}
 .d-hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.35);pointer-events:none;transition:opacity 0.5s}
 .d-hint.hide{opacity:0}
@@ -62,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
   <div class="s-sec">
     <div class="s-lbl">字体大小</div>
     <div class="sl-row">
-      <input type="range" id="fsSlider" min="24" max="400" step="4" value="120">
+      <input type="range" id="fsSlider" min="24" max="200" step="4" value="48">
       <span class="sl-val" id="fsVal">48px</span>
     </div>
   </div>
@@ -89,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
 <script>
 (function(){
 var COLORS=['#FFFFFF','#FF0000','#FF6600','#FFCC00','#00FF00','#00CCFF','#0000FF','#9900FF','#FF00FF','#FF6699','#000000','#888888'];
-var cfg={text:'',fc:'#FFFFFF',fs:120,bc:'#000000',sp:5};
+var cfg={text:'',fc:'#FFFFFF',fs:48,bc:'#000000',sp:5};
 var animId=null,st=0;
 
 function makeGrid(id,sel,onPick){
