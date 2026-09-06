@@ -39,7 +39,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;ba
 
 /* 弹幕展示页 */
 .d-page{background:#000;cursor:pointer;overflow:hidden;z-index:9999}
-.d-page.landscape{position:fixed;width:100vh;height:100vw;top:0;left:100vw;transform-origin:0 0;transform:rotate(90deg);background:#000}
 .d-text{position:absolute;white-space:nowrap;font-weight:700;will-change:left}
 .d-hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.35);pointer-events:none;transition:opacity 0.5s}
 .d-hint.hide{opacity:0}
@@ -133,8 +132,21 @@ document.getElementById('launchBtn').onclick=function(){
 
   document.getElementById('sPage').className='page s-page';
   var dp=document.getElementById('dPage');
-  dp.className='page d-page active landscape';
+  dp.className='page d-page active';
   dp.style.backgroundColor=cfg.bc;
+
+  // Detect browser toolbar height and apply landscape rotation
+  var barH=window.outerHeight-window.innerHeight;
+  if(barH<20) barH=44; // default for mobile browsers
+  var vw=window.innerWidth;
+  var vh=window.innerHeight;
+  dp.style.position='fixed';
+  dp.style.top=barH+'px';
+  dp.style.left='0';
+  dp.style.width=vh+'px';
+  dp.style.height=(vw-barH)+'px';
+  dp.style.transformOrigin='0 0';
+  dp.style.transform='rotate(90deg) translateX(-'+barH+'px)';
 
   var dt=document.getElementById('dText');
   dt.textContent=cfg.text;
@@ -177,6 +189,7 @@ function startAnim(){
 document.getElementById('dPage').onclick=function(){
   if(animId){cancelAnimationFrame(animId);animId=null}
   document.getElementById('dPage').className='page d-page';
+  document.getElementById('dPage').style.cssText='';
   document.getElementById('sPage').className='page s-page active';
 };
 })();
